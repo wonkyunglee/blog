@@ -15,7 +15,6 @@ ACM 포멧은 압축 해제 해주시고, NIPS 2018 파일 두개는 같은 폴�
 
 ```
 sudo apt-get install texmaker
-sudo apt-get install texlive-generic-extra
 ```
 
 texmaker 만 설치하면 될 줄 알았는데 아니더군요
@@ -24,7 +23,16 @@ ACM 포멧을 로드해서 렌더링하는데 다음과 같은 에러가 나게 
 LaTeX Error: File iftex.sty not found
 ```
 texlive-generic-extra 패키지를 설치하여 해결하였습니다.
+```
+sudo apt-get install texlive-generic-extra
+```
 참고 링크 : https://tex.stackexchange.com/questions/392577/how-to-fix-iftex-sty-not-found-issue
+
+더불어 한글 주석을 쓰면 ko.tex 가 설치되어있지 않아 에러가 납니다. 이는 texlive-full 을 설치하여 해결하였습니다.
+```
+sudo apt-get install texlive-full
+```
+
 
 ## texmaker 실행, 로드 및 빌드
 설치가 잘 되었다면, 터미널에 다음 명령어를 실행하여 texmaker 를 실행시킬 수 있습니다.
