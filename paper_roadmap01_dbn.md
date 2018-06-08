@@ -64,6 +64,8 @@ DBN 의 구조부터 살펴보자. 저자들은 DBN 의 상위 두 hidden layers
 1. 학습 알고리즘이 지엽적이다(local).
 1. neuron 끼리의 통신이 간단하다. 그들의 stochastic binary states 와만 통신하면 된다.
 
+일단 여기서 말하는 greedy algorithm 은 하나의 레이어를 먼저 학습 시킨 후 그 레이어를 고정시키고 그 다음 레이어를 학습시키고 를 계속 반복한다는 이야기이다. 전체 태스크의 최적 파라미터를 찾는 것이 아니라 태스크를 찾는 것이다.
+
 
 ## Complementary Priors
 설명 링크 : http://www.iro.umontreal.ca/~lisa/twiki/pub/Public/DeepLearningWorkshopNIPS2007/deep_learning_teh.pdf
@@ -73,4 +75,4 @@ DBN 의 구조부터 살펴보자. 저자들은 DBN 의 상위 두 hidden layers
 설명 링크: https://stats.stackexchange.com/questions/54849/why-does-explaining-away-make-intuitive-sense
 
 
-## 
+##
