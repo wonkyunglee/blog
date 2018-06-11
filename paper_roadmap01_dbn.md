@@ -19,6 +19,8 @@ Traditional 머신러닝에 대한 이해가 상당하지 않으면 한 줄도 �
 1. Discriminative vs Generative
 1. Bayes' Rule
 1. Probabilistic Graphical Model
+1. Latent Variable model
+1. Markov Random Field
 1. Maximum Likelihood
 1. Variational Methods
 1. Gibbs Sampling
@@ -32,6 +34,7 @@ Traditional 머신러닝에 대한 이해가 상당하지 않으면 한 줄도 �
 1. Explaining away effect
 1. Gaussian Processes
 1. Boltzmann Machine, Restricted Boltzmann Machine
+1. Hopfield Network
 1. Conjugate Prior
 1. Associative Memory
 1. Dynamic Programming
@@ -74,12 +77,16 @@ DBN 을 이루고 있는 RBM 을 먼저 알아보자. 위키피디아의 RBM에 
 > A restricted Boltzmann machine (RBM) is a generative stochastic artificial neural network that can learn a probability distribution over its set of inputs.
 
 번역해보면 RBM은 인풋의 집합에 대한 확률 분포를 학습할 수 있는 생성 확률적 신경망이라고 한다. (이건 또 무슨 말일까...)
+통계 물리학에서 거시상태와 미시상태에 대한 설명을 할 때 등장한다고 하는데, 자세한 것은 알지 못하지만 짚고 넘어가야 할 개념이 있다.
+에너지와 확률의 관계가 그것인데, 에너지 값이 낮을 수록 가능성 있는 상태가 된다는 것이다. 즉, 에너지가 낮을 수록 사건이 일어날 확률이 높다. 이는 섀넌의 정보이론에 등장하는 엔트로피의 개념과도 일맥상통하는 부분으로 언젠간 따로 다뤄볼 것이다.
 
-RBM 은 문자 그대로 Boltzmann Machine 의 제한(Restricted) 버젼이다. 볼쯔만 머신은 Visible layer와 hidden layer 두 층으로 이루어져 있는 확률 그래피컬 모델(PGM) 이다. 확률 그래피컬 모델은 자세히 공부하려면 매우 복잡하지만, 간단하게 확률 변수들의 의존 관계를 그래프 형식으로 나타내는 방법이라고 생각하면 된다.
+여하튼, RBM 은 문자 그대로 Boltzmann Machine 의 제한(Restricted) 버젼이다. 볼쯔만 머신은 Visible layer와 hidden layer 두 층으로 이루어져 있는 확률 그래피컬 모델(PGM) 이다. 확률 그래피컬 모델은 자세히 공부하려면 매우 복잡하지만, 간단하게 확률 변수들의 의존 관계를 그래프 형식으로 나타내는 방법이라고 생각하면 된다.
 
 RBM 은 볼쯔만 머신에 각 레이어의 유닛들이 서로 연결되지 않는다는 제한을 준 모델이다. 이런 그래프 모양을 Bipartite graph 라고 하긴 하는데 용어는 몰라도 상관없다. 다만 이렇게 하는 이유는 Gradient-based Contrastive Divergence 알고리즘으로 학습할 때 제한된 버젼이 아닌 버젼보다 연산량이 적어서 훨씬 학습이 더 잘 되기 때문이라고 한다. 이는 곧 이전 레이어에 대해 레이어 유닛 들이 conditionally independent 라는 뜻이고, 이 사실은 추후 확률 분포 유도에서 큰 역할을 한다. (이 내용은 RBM에 관련된 논문을 더 찾아봐야 확실하게 이해할 수 있을 것 같다...) 이 학습 방법은 뒤에서 설명하기로 하자.
 
-RBM 에서는 Visible unit 과 Hidden unit 들이 0과 1의 바이너리 값을 갖는다고 보통 정의한다. (물론 후에 나열할 수식들을 상황에 맞게 유도해서 다른 값들을 갖도록 정의할 수도 있다.) RBM 자체가 확률 그래피컬 모델이기 때문에 어떤 확률 분포를 모델링 해야 하는데, 특이하게도 확률분포 대신 에너지 함수를 정의한다. 그리고 이 에너지 함수로부터 visible 벡터와 hidden 벡터의 joint probability distribution 를 유도할 수 있으니 사실 확률 분포를 정의한거나 마찬가지이다. 일단 RBM 이 Generative 모델이라고 불리는 이유는 이렇게 결합 확률 분포를 정의하고 이로부터 우리가 필요한 확률 분포를 유도하여 써먹을 수 있기 때문이다.  
+여기까지 보면 RBM 이나 단층 오토인코더나 생김새로 보아 별반 다르지 않아보인다. 하지만 두 모델은 아주 큰 차이점이 있다. 오토인코더는 이전 층에서 다음 층으로 넘어갈 때의 노드 값이 결정되어 바뀌지 않지만 RBM 에서는 각 노드의 값이 특정 확률 분포에서 샘플링되어 결정되므로 확률적이다.
+
+RBM 에서는 Visible unit 과 Hidden unit 들이 0과 1의 바이너리 값을 갖는다고 보통 정의한다. (물론 후에 나열할 수식들을 상황에 맞게 유도해서 다른 값들을 갖도록 정의할 수도 있다.) RBM 자체가 확률 그래피컬 모델이기 때문에 어떤 확률 분포를 모델링 해야 하는데, 특이하게도 확률분포 대신 에너지 함수를 정의한다. 그리고 이 에너지 함수로부터 visible 벡터와 hidden 벡터의 joint probability distribution 를 유도할 수 있으니 사실 확률 분포를 정의한거나 마찬가지이다. 그리고 이 결합확률분포를 hidden units 로 마지널라이즈하면 visible variable 즉 데이터 셋에대한 확률 분포를 만들 수 있다. 따라서 RBM 은 데이터셋에 대한 생성 모델(Generative model) 이라고 볼 수 있다.
 
 
 ## Contrastive Divergence
