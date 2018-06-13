@@ -54,9 +54,9 @@ Abstract 의 첫 문장에는 이렇게 쓰여있다.
 
 
 ## Structure
-DBN 의 구조부터 살펴보자. 저자들은 DBN 의 상위 두 hidden layers 는 undirected associative memory 로, 나머지 hidden layers 는 directed acyclic graph 로 모델링하였다. 여기서 나머지 레이어들은 상위 두 레이어에서 얻은 representations 를 observable variables(pixel 같은 것들) 로 바꾸는 역할을 해준다.
+DBN 의 구조부터 살펴보자. 저자들은 DBN 의 상위 두 hidden layers 는 undirected associative memory 로, 나머지 hidden layers 는 directed acyclic graph 로 모델링하였다. 여기서 나머지 레이어들은 상위 두 레이어에서 얻은 representations 를 observable variables(pixel 같은 것들) 로 바꾸는 역할을 해준다. (사실 두 부분은 각각, 상위 두 레이어는 RBM 으로, 나머지 레이어들은 Sigmoid Belief Network 으로 부를 수 있다.)
 
-이 문장을 이해하기 위해 먼저 Associative memory 를 간단히 알아보자. 말그대로 연관 검색을 할 수 있는 메모라는 뜻으로 이해하면 좋을 것 같다. 본래 컴퓨터에서 사용하는 대부분의 기억장치는 메모리의 주소를 입력하여 입려된 주소에 저장되어 있는 내용에 접근한다. 하지만 Associative memory 에서는 저장되어있는 내용으로부터 주소를 유추할 수 있기에 내용으로 검색을 할 수 있다. 아주 쉽게 예를 들면, Associative memory 를 사용하면 푸들과 시베리안허스키의 메모리 주소는 비슷하도록, 그리고 비행기나 자동차의 메모리 주소는 이에 비해 멀리 떨어져있도록 데이터를 저장한다. 아무래도 이 논문에서 상위 두 레이어를 Associative memory 라고 표현한 것은, 비슷한 데이터가 입력되면 그것들을 비슷한 표현 벡터 (representation) 으로 표현하기 때문이 아닌가 싶다.
+위 문장을 이해하기 위해 먼저 Associative memory 를 간단히 알아보자. 말그대로 연관 검색을 할 수 있는 메모라는 뜻으로 이해하면 좋을 것 같다. 본래 컴퓨터에서 사용하는 대부분의 기억장치는 메모리의 주소를 입력하여 입려된 주소에 저장되어 있는 내용에 접근한다. 하지만 Associative memory 에서는 저장되어있는 내용으로부터 주소를 유추할 수 있기에 내용으로 검색을 할 수 있다. 아주 쉽게 예를 들면, Associative memory 를 사용하면 푸들과 시베리안허스키의 메모리 주소는 비슷하도록, 그리고 비행기나 자동차의 메모리 주소는 이에 비해 멀리 떨어져있도록 데이터를 저장한다. 아무래도 이 논문에서 상위 두 레이어를 Associative memory 라고 표현한 것은, 비슷한 데이터가 입력되면 그것들을 비슷한 표현 벡터 (representation) 으로 표현하기 때문이 아닌가 싶다.
 > reference : http://www.aistudy.co.kr/neural/associative_memory.htm
 
 나머지 hidden layers 는 단지 representation 으로부터 pixel 등의 variable 로의 단방향성 mapping 이라고 할 수 있을 것 같다.
@@ -69,11 +69,10 @@ DBN 의 구조부터 살펴보자. 저자들은 DBN 의 상위 두 hidden layers
 1. 학습 알고리즘이 지엽적이다(local).
 1. neuron 끼리의 통신이 간단하다. 그들의 stochastic binary states 와만 통신하면 된다.
 
-일단 여기서 말하는 greedy algorithm 은 하나의 레이어를 먼저 학습 시킨 후 그 레이어를 고정시키고 그 다음 레이어를 학습시키고 를 계속 반복한다는 이야기이다. 전체 태스크의 최적 파라미터를 찾는 것이 아니라 태스크를 찾는 것이다.
-
+일단 여기서 말하는 greedy algorithm 은 하나의 레이어를 먼저 학습 시킨 후 그 레이어를 고정시키고 그 다음 레이어를 학습시키고 를 계속 반복한다는 이야기이다. 전체 태스크의 최적 파라미터를 찾는 것이 아니라 태스크를 찾는 것이다. 이 로직은 잘 학습이 되지 않던 기존 DBN 을 잘 학습시킬 수 있도록 힌튼이 고안한 방법으로, 각 층을 Greedy 하게 학습시킬 때에 RBM 을 학습시키듯이 파라미터들을 학습시키게 된다. 따라서 RBM 의 구조와 학습 방법을 먼저 알아야한다.
 
 ## Restricted Boltzmann Machine
-DBN 을 이루고 있는 RBM 을 먼저 알아보자. 위키피디아의 RBM에 대한 정의를 그대로 인용해보면 다음과 같다.
+DBN 을 학습시킬 때 필요한 RBM 을 먼저 알아보자. 위키피디아의 RBM에 대한 정의를 그대로 인용해보면 다음과 같다.
 > A restricted Boltzmann machine (RBM) is a generative stochastic artificial neural network that can learn a probability distribution over its set of inputs.
 
 번역해보면 RBM은 인풋의 집합에 대한 확률 분포를 학습할 수 있는 생성 확률적 신경망이라고 한다. (이건 또 무슨 말일까...)
@@ -87,6 +86,7 @@ RBM 은 볼쯔만 머신에 각 레이어의 유닛들이 서로 연결되지 �
 여기까지 보면 RBM 이나 단층 오토인코더나 생김새로 보아 별반 다르지 않아보인다. 하지만 두 모델은 아주 큰 차이점이 있다. 오토인코더는 이전 층에서 다음 층으로 넘어갈 때의 노드 값이 결정되어 바뀌지 않지만 RBM 에서는 각 노드의 값이 특정 확률 분포에서 샘플링되어 결정되므로 확률적이다.
 
 RBM 에서는 Visible unit 과 Hidden unit 들이 0과 1의 바이너리 값을 갖는다고 보통 정의한다. (물론 후에 나열할 수식들을 상황에 맞게 유도해서 다른 값들을 갖도록 정의할 수도 있다.) RBM 자체가 확률 그래피컬 모델이기 때문에 어떤 확률 분포를 모델링 해야 하는데, 특이하게도 확률분포 대신 에너지 함수를 정의한다. 그리고 이 에너지 함수로부터 visible 벡터와 hidden 벡터의 joint probability distribution 를 유도할 수 있으니 사실 확률 분포를 정의한거나 마찬가지이다. 그리고 이 결합확률분포를 hidden units 로 마지널라이즈하면 visible variable 즉 데이터 셋에대한 확률 분포를 만들 수 있다. 따라서 RBM 은 데이터셋에 대한 생성 모델(Generative model) 이라고 볼 수 있다.
+
 
 
 ## Contrastive Divergence
